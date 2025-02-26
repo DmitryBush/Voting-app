@@ -1,8 +1,13 @@
 package server.entity;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.*;
 
-public class AnswerOption {
+public class AnswerOption implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 1L;
+
     private List<String> options;
     private Map<Integer, Integer> answers = new HashMap<>();
     private Map<Integer, List<String>> votedUsers = new HashMap<>();

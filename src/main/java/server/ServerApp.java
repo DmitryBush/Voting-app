@@ -11,6 +11,7 @@ import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.codec.string.StringEncoder;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
+import server.handlers.InputServerHandler;
 import server.handlers.LoginServerHandler;
 
 public class ServerApp {
@@ -32,7 +33,7 @@ public class ServerApp {
                             socketChannel.pipeline()
                                     .addLast(new StringEncoder())
                                     .addLast(new StringDecoder())
-                                    .addLast(new LoginServerHandler());
+                                    .addLast(new InputServerHandler());
                         }
                     })
                     .option(ChannelOption.SO_BACKLOG, 128)
@@ -40,6 +41,7 @@ public class ServerApp {
 
             var future = bootstrap.bind(9090).sync();
 
+            ServerController.Execute();
             future.channel().closeFuture().sync();
         } catch (InterruptedException e) {
             throw new RuntimeException(e);

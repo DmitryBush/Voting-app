@@ -1,11 +1,16 @@
 package server.entity;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
 
-public class Topic {
+public class Topic implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 1L;
+
     private String name;
     private String username;
     private List<Vote> votes = new ArrayList<>();
