@@ -3,7 +3,8 @@ package handlers;
 import client.ClientController;
 import handlers.exceptions.IncorrectCommand;
 import parser.StringParser;
-import server.handlers.VoteServerHandler;
+import server.entity.ServerState;
+import server.handlers.InputServerHandler;
 
 public class VoteHandler extends CommandHandler {
     private final Object object;
@@ -14,18 +15,20 @@ public class VoteHandler extends CommandHandler {
         object = o;
     }
     @Override
-    protected void process(String command) {
+    protected String process(String command, String id) {
+        var map = StringParser.parseCommand(command);
         if (object.getClass() == ClientController.class) {
-            var map = StringParser.parseCommand(command);
             map.forEach((key, value) -> {
                 if (value == null)
                     throw new IncorrectCommand("Occurred error near parameter value");
             });
-        } else if (object.getClass() == VoteServerHandler.class) {
-
+        } else if (object.getClass() == InputServerHandler.class) {
+            if (ServerState.getInstance().vote(id, map.get("t"), map.get("v"), map.get("vc")))
+                return "You have successfully voted";
+            else {
+                return "Something wrong";
+            }
         }
-        else {
-            throw new RuntimeException();
-        }
+        throw new RuntimeException();
     }
 }

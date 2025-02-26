@@ -17,13 +17,13 @@ public abstract class CommandHandler implements handler{
     }
 
     @Override
-    public void handle(String command) {
+    public void handle(String command, String id) {
         if (baseCommand.equalsIgnoreCase(command.split(" ")[0]))
-            process(command);
+            process(command, id);
 
         if (Objects.nonNull(nextChain))
-            nextChain.handle(command);
+            nextChain.handle(command, id);
     }
 
-    protected abstract void process(String command);
+    protected abstract String process(String command, String id);
 }
