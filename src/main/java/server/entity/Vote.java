@@ -1,8 +1,13 @@
 package server.entity;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.Objects;
 
-public class Vote {
+public class Vote implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 1L;
+
     private String name;
     private String username;
     private String description;

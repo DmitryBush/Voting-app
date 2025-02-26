@@ -30,28 +30,14 @@ public class ClientApplication {
                         }
                     });
             var future = bootstrap.connect("127.0.0.1", 9090).sync();
-            handleLogin(future);
 
-
+            ClientController.Execute();
             future.channel().closeFuture().sync();
         } catch (InterruptedException e){
             throw new RuntimeException(e);
         }
         finally {
             loopGroup.shutdownGracefully();
-        }
-    }
-
-    private static void handleLogin(ChannelFuture channelFuture){
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Enter your username");
-        while (true){
-            String s = scanner.nextLine();
-            if (s.equalsIgnoreCase("exit")){
-                channelFuture.channel().close();
-                return;
-            }
-            channelFuture.channel().writeAndFlush(s);
         }
     }
 }

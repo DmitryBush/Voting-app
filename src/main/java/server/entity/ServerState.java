@@ -1,13 +1,17 @@
 package server.entity;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public class ServerState {
+public class ServerState implements Serializable {
     private static volatile ServerState instance = null;
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     private final List<Topic> topics = new ArrayList<>();
     private final Map<String, String> activeUsers = new ConcurrentHashMap<>();
@@ -113,5 +117,14 @@ public class ServerState {
                         && lamb.getUsername().equalsIgnoreCase(activeUsers.get(id)))))
             return tmpTopic.removeVote(vote);
         return false;
+    }
+
+    public void restoreState(ServerState loadedState) {
+        this.topics.clear();
+        this.topics.addAll(loadedState.topics);
+        this.activeUsers.clear();
+        this.activeUsers.putAll(loadedState.activeUsers);
+        this.users.clear();
+        this.users.addAll(loadedState.users);
     }
 }

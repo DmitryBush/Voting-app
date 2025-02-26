@@ -8,7 +8,7 @@ public class InputServerHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         super.channelRead(ctx, msg);
-        new LoginHandler(this).handle((String) msg, ctx.channel().id().toString());
+        ctx.write(new LoginHandler(this).handle((String) msg, ctx.channel().id().toString()));
     }
 
     @Override
