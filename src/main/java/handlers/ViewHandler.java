@@ -3,7 +3,8 @@ package handlers;
 import client.ClientController;
 import handlers.exceptions.IncorrectCommand;
 import parser.StringParser;
-import server.handlers.ViewServerHandler;
+import server.entity.ServerState;
+import server.handlers.InputServerHandler;
 
 public class ViewHandler extends CommandHandler {
     private final Object object;
@@ -15,18 +16,22 @@ public class ViewHandler extends CommandHandler {
     }
 
     @Override
-    protected void process(String command) {
+    protected String process(String command, String id) {
+        var map = StringParser.parseCommand(command);
         if (object.getClass() == ClientController.class) {
-            var map = StringParser.parseCommand(command);
             map.forEach((key, value) -> {
                 if (value == null)
                     throw new IncorrectCommand("Occurred error near parameter value");
             });
-        } else if (object.getClass() == ViewServerHandler.class) {
-
+        } else if (object.getClass() == InputServerHandler.class) {
+            if (map.containsKey("v") && map.containsKey("t")) {
+                return ServerState.getInstance().view(map.get("t"), map.get("v"));
+            } else if (map.containsKey("t")) {
+                return ServerState.getInstance().view(map.get("t"));
+            } else {
+                return ServerState.getInstance().view();
+            }
         }
-        else {
-            throw new RuntimeException();
-        }
+        throw new RuntimeException();
     }
 }

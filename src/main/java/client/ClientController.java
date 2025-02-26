@@ -21,7 +21,7 @@ public class ClientController {
         else if (s.equalsIgnoreCase("exit"))
             return true;
         else
-            new LoginHandler(this).handle(s);
+            new LoginHandler(this).handle(s, );
         return false;
     }
 }
