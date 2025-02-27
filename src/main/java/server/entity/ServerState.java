@@ -1,10 +1,14 @@
 package server.entity;
 
+import server.entity.exceptions.NotLoggedIn;
+import server.entity.exceptions.NotUniqueName;
+
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -27,6 +31,11 @@ public class ServerState implements Serializable {
         return instance;
     }
 
+    private void isUserLoggedIn(String id) {
+        if (!activeUsers.containsKey(id))
+            throw new NotLoggedIn("You're not logged in");
+    }
+
     public boolean login(String username, String id) {
         if (activeUsers.containsValue(username))
             return false;
@@ -37,54 +46,62 @@ public class ServerState implements Serializable {
     }
 
     public boolean createTopic(String nameTopic, String id) {
-        if (activeUsers.containsKey(id))
-            return false;
+        isUserLoggedIn(id);
         if (topics.stream().anyMatch(topic -> topic.getName().equalsIgnoreCase(nameTopic)))
-            return false;
+            throw new NotUniqueName("You're entered not unique name for topic");
         return topics.add(new Topic(nameTopic, id));
     }
 
-    public void createVote(String nameTopic, String id, Vote vote) {
+    public String createVote(String nameTopic, String id, Vote vote) {
+        isUserLoggedIn(id);
         var topic = topics.stream()
                 .filter(lamb -> lamb.getName().equalsIgnoreCase(nameTopic))
-                .findFirst().orElseThrow();
+                .findFirst().orElseThrow(NoSuchElementException::new);
         vote.setUsername(activeUsers.get(id));
-        if (topic.getVoteStream().anyMatch(vote1 -> vote1.getName().equalsIgnoreCase(vote.getName())))
-            throw new RuntimeException();
+        if (topic.getVoteStream()
+                .anyMatch(vote1 -> vote1.getName().equalsIgnoreCase(vote.getName())))
+            throw new NotUniqueName("You're entered not unique name for vote");
         topic.addVote(vote);
+        return "Vote created";
     }
 
-    public String view() {
+    public String view(String id) {
+        isUserLoggedIn(id);
         StringBuilder stringBuilder = new StringBuilder();
-        topics.forEach(topic -> stringBuilder
-                .append(String.format("%s (votes in topic %d)", topic.getName(), topic.getVoteStream().count()))
-                .append("/n"));
+        if (topics.isEmpty())
+            stringBuilder.append("There are no topics");
+        else
+            topics.forEach(topic -> stringBuilder
+                    .append(String.format("%s (votes in topic %d)", topic.getName(), topic.getVoteStream().count()))
+                    .append("/n"));
         return stringBuilder.toString();
     }
 
-    public String view(String topic) {
+    public String view(String id, String topic) {
+        isUserLoggedIn(id);
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("List of votes in ").append(topic).append("/n");
         topics.stream()
                 .filter(lamb -> lamb.getName().equalsIgnoreCase(topic))
                 .findFirst()
-                .orElseThrow()
+                .orElseThrow(NoSuchElementException::new)
                 .getVoteStream()
                 .forEach(lamb -> stringBuilder.append(lamb.getName()).append("/n"));
         return stringBuilder.toString();
     }
 
-    public String view(String topic, String vote) {
+    public String view(String id, String topic, String vote) {
+        isUserLoggedIn(id);
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("Information about vote: ").append(vote).append("/n");
         var currVote = topics.stream()
                 .filter(lamb -> lamb.getName().equalsIgnoreCase(topic))
                 .findFirst()
-                .orElseThrow()
+                .orElseThrow(NoSuchElementException::new)
                 .getVoteStream()
                 .filter(lamb -> lamb.getName().equalsIgnoreCase(vote))
                 .findFirst()
-                .orElseThrow();
+                .orElseThrow(NoSuchElementException::new);
         stringBuilder.append(currVote.getDescription()).append("/n");
         var answerOptions = currVote.getAnswerOptions();
         for (int i = 0; i < answerOptions.getOptions().size(); i++) {
@@ -95,24 +112,26 @@ public class ServerState implements Serializable {
     }
 
     public boolean vote(String id, String topic, String vote, String choice) {
+        isUserLoggedIn(id);
         var answerOptions = topics.stream()
                 .filter(lamb -> lamb.getName().equalsIgnoreCase(topic))
                 .findFirst()
-                .orElseThrow()
+                .orElseThrow(NoSuchElementException::new)
                 .getVoteStream()
                 .filter(lamb -> lamb.getName().equalsIgnoreCase(vote))
                 .findFirst()
-                .orElseThrow().getAnswerOptions();
+                .orElseThrow(NoSuchElementException::new).getAnswerOptions();
         if (answerOptions.isUserVote(activeUsers.get(id)))
             return false;
         return answerOptions.vote(activeUsers.get(id), Integer.parseInt(choice));
     }
 
     public boolean delete(String id, String topic, String vote) {
+        isUserLoggedIn(id);
         var tmpTopic = topics.stream()
                 .filter(lamb -> lamb.getName().equalsIgnoreCase(topic))
                 .findFirst()
-                .orElseThrow();
+                .orElseThrow(NoSuchElementException::new);
         if (tmpTopic.getVoteStream().anyMatch(lamb -> !(lamb.getName().equalsIgnoreCase(vote)
                         && lamb.getUsername().equalsIgnoreCase(activeUsers.get(id)))))
             return tmpTopic.removeVote(vote);
@@ -122,8 +141,8 @@ public class ServerState implements Serializable {
     public void restoreState(ServerState loadedState) {
         this.topics.clear();
         this.topics.addAll(loadedState.topics);
-        this.activeUsers.clear();
-        this.activeUsers.putAll(loadedState.activeUsers);
+//        this.activeUsers.clear();
+//        this.activeUsers.putAll(loadedState.activeUsers);
         this.users.clear();
         this.users.addAll(loadedState.users);
     }

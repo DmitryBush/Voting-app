@@ -1,6 +1,7 @@
 package handlers;
 
 import client.ClientController;
+import handlers.exceptions.IncorrectCommand;
 import parser.StringParser;
 import server.entity.ServerState;
 import server.handlers.InputServerHandler;
@@ -15,25 +16,21 @@ public class LoginHandler extends CommandHandler {
 
     @Override
     protected String process(String command, String id) {
-        var parameters = command.split(" ");
-
+        var map = StringParser.parseCommand(command);
         if (object.getClass() == ClientController.class) {
-            for (var part: parameters) {
-                if (part.startsWith("-u=")) {
-                    if (part.split("=").length < 2)
-                        return "Something wrong with parameters";
-                }
-                else
-                    return "Absent parameters";
-            }
+            if (map.isEmpty())
+                throw new IncorrectCommand("Entered empty command");
+            map.forEach((key, value) -> {
+                if (value == null)
+                    throw new IncorrectCommand("Occurred error near parameter value");
+            });
+            return "";
         } else if (object.getClass() == InputServerHandler.class) {
-            var map = StringParser.parseCommand(command);
-
             if (ServerState.getInstance().login(map.get("u"), id))
                 return "Successful login";
             else
                 return "You're already logged in";
-        }
-        throw new RuntimeException();
+        } else
+            throw new RuntimeException();
     }
 }

@@ -26,12 +26,13 @@ public class ClientApplication {
                         protected void initChannel(SocketChannel socketChannel) {
                             socketChannel.pipeline()
                                     .addLast(new StringEncoder())
-                                    .addLast(new StringDecoder());
+                                    .addLast(new StringDecoder())
+                                    .addLast(new InputHandler());
                         }
                     });
             var future = bootstrap.connect("127.0.0.1", 9090).sync();
 
-            ClientController.Execute();
+            new ClientController().Execute(future);
             future.channel().closeFuture().sync();
         } catch (InterruptedException e){
             throw new RuntimeException(e);

@@ -20,18 +20,28 @@ public class CreateHandler extends CommandHandler {
     }
     @Override
     protected String process(String command, String id) {
+        var map = StringParser.parseCommand(command);
         if (object.getClass() == ClientController.class) {
-            var map = StringParser.parseCommand(command);
+            if (map.isEmpty())
+                throw new IncorrectCommand("Entered empty command");
+
             map.forEach((key, value) -> {
                 if (value == null)
                     throw new IncorrectCommand("Occurred error near parameter value");
             });
+            if (map.containsKey("t")) {
+                if (map.containsKey("va") && map.containsKey("vc")) {
+                    if (map.get("va").split("/n").length != Integer.parseInt(map.get("vc")))
+                        throw new IncorrectCommand("Not enough answer options entered");
+                }
+                else
+                    throw new IncorrectCommand("Incomplete command entered to create a vote");
+            }
+            return "";
         } else if (object.getClass() == InputServerHandler.class) {
-            var map = StringParser.parseCommand(command);
-
             if (map.containsKey("n") && map.containsKey("t")) {
                 ServerState.getInstance().createTopic(map.get("n"), id);
-                ServerState.getInstance()
+                return ServerState.getInstance()
                         .createVote(map.get("t"), id,
                                 new Vote(map.get("vn"), null, map.get("vd"),
                                         new AnswerOption(Arrays.stream(map.get("va").split("/n",
@@ -39,17 +49,15 @@ public class CreateHandler extends CommandHandler {
             } else if (map.containsKey("n")) {
                 if (ServerState.getInstance().createTopic(map.get("n"), id))
                     return "Topic created";
-                else
-                    return "Something go wrong";
             } else if (map.containsKey("t")) {
-                ServerState.getInstance()
+                return ServerState.getInstance()
                         .createVote(map.get("t"), id,
                                 new Vote(map.get("vn"), null, map.get("vd"),
                                         new AnswerOption(Arrays.stream(map.get("va").split("/n",
                                                 Integer.parseInt(map.get("vc")))).toList())));
-            } else
-                return "Occurred error near parameter value";
-        }
-        throw new RuntimeException();
+            }
+            return "Occurred error";
+        } else
+            throw new RuntimeException();
     }
 }

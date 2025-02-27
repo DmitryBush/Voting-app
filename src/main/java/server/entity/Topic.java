@@ -31,8 +31,8 @@ public class Topic implements Serializable {
         return true;
     }
 
-    public void addVote(Vote vote) {
-        votes.add(vote);
+    public boolean addVote(Vote vote) {
+        return votes.add(vote);
     }
 
     public Stream<Vote> getVoteStream() {
