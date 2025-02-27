@@ -21,7 +21,7 @@ public class ClientController {
 
     private boolean processString(String s, ChannelFuture future) {
         try {
-            if (s.split(" ").length < 1)
+            if (s.isEmpty())
                 return false;
             else if (s.equalsIgnoreCase("exit")) {
                 future.channel().close();

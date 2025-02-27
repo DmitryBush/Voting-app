@@ -37,7 +37,7 @@ public class ServerState implements Serializable {
     }
 
     public boolean login(String username, String id) {
-        if (activeUsers.containsValue(username))
+        if (activeUsers.containsKey(id))
             return false;
         else if (!users.contains(username))
             users.add(username);
