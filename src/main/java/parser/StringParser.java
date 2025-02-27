@@ -2,20 +2,19 @@ package parser;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class StringParser {
     public static Map<String, String> parseCommand(String input) {
         Map<String, String> params = new HashMap<>();
-        String[] parts = input.split(" ");
+        Pattern pattern = Pattern.compile("-+([^=\\s]+)=?([^-]*)");
+        Matcher matcher = pattern.matcher(input);
 
-        for (String part : parts) {
-            if (part.startsWith("-")) {
-                String[] keyValue = part.replaceFirst("^-+", "")
-                        .split("=");
-                String key = keyValue[0];
-                String value = (keyValue.length > 1) ? keyValue[1] : null;
-                params.put(key, value);
-            }
+        while (matcher.find()) {
+            String key = matcher.group(1);
+            String value = matcher.group(2).trim();
+            params.put(key, value.isEmpty() ? null : value);
         }
         return params;
     }

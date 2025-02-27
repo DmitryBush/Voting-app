@@ -32,7 +32,7 @@ public class VoteHandler extends CommandHandler {
             if (ServerState.getInstance().vote(id, map.get("t"), map.get("v"), map.get("vc")))
                 return "You have successfully voted";
             else {
-                return "Something wrong";
+                return "You're already voted";
             }
         } else
             throw new RuntimeException();

@@ -19,7 +19,7 @@ public class LoginHandler extends CommandHandler {
         var map = StringParser.parseCommand(command);
         if (object.getClass() == ClientController.class) {
             if (map.isEmpty())
-                throw new IncorrectCommand("Entered empty command");
+                throw new IncorrectCommand("Entered command with empty parameters");
             map.forEach((key, value) -> {
                 if (value == null)
                     throw new IncorrectCommand("Occurred error near parameter value");

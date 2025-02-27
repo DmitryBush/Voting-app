@@ -21,8 +21,10 @@ public class ClientController {
 
     private boolean processString(String s, ChannelFuture future) {
         try {
-            if (s.isEmpty())
+            if (s.isEmpty()) {
+                System.out.println("Entered empty command");
                 return false;
+            }
             else if (s.equalsIgnoreCase("exit")) {
                 future.channel().close();
                 return true;
@@ -66,6 +68,6 @@ public class ClientController {
 
         System.out.println("Select an answer option");
         future.channel().writeAndFlush(String.format("view -t=%s -v=%s", map.get("t"), map.get("v")));
-        return sb.append(" -vc=").append(scanner.nextLine()).toString();
+        return sb.append(" -vc=").append(Integer.parseInt(scanner.nextLine()) - 1).toString();
     }
 }
