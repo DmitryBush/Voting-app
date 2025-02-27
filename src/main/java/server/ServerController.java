@@ -1,24 +1,27 @@
 package server;
 
+import io.netty.channel.ChannelFuture;
 import server.entity.ServerState;
 
 import java.io.*;
 import java.util.Scanner;
 
 public class ServerController {
-    public static void Execute() {
+    public static void Execute(ChannelFuture future) {
         var running = true;
         Scanner scanner = new Scanner(System.in);
 
         while (running){
-            if (processString(scanner.nextLine()))
+            if (processString(scanner.nextLine(), future))
                 running = false;
         }
     }
 
-    private static boolean processString(String s){
-        if (s.equalsIgnoreCase("exit"))
+    private static boolean processString(String s, ChannelFuture future){
+        if (s.equalsIgnoreCase("exit")) {
+            future.channel().close();
             return true;
+        }
         else if (s.equalsIgnoreCase("save")) {
             save();
             return false;

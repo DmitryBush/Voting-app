@@ -41,7 +41,7 @@ public class ServerApp {
 
             var future = bootstrap.bind(9090).sync();
 
-            ServerController.Execute();
+            ServerController.Execute(future);
             future.channel().closeFuture().sync();
         } catch (InterruptedException e) {
             throw new RuntimeException(e);

@@ -37,7 +37,7 @@ public class ServerState implements Serializable {
     }
 
     public boolean login(String username, String id) {
-        if (activeUsers.containsValue(username))
+        if (activeUsers.containsKey(id))
             return false;
         else if (!users.contains(username))
             users.add(username);
@@ -72,7 +72,7 @@ public class ServerState implements Serializable {
             stringBuilder.append("There are no topics");
         else
             topics.forEach(topic -> stringBuilder
-                    .append(String.format("%s (votes in topic %d)", topic.getName(), topic.getVoteStream().count()))
+                    .append(String.format("%s (votes in topic - %d)", topic.getName(), topic.getVoteStream().count()))
                     .append("/n"));
         return stringBuilder.toString();
     }
@@ -80,13 +80,17 @@ public class ServerState implements Serializable {
     public String view(String id, String topic) {
         isUserLoggedIn(id);
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("List of votes in ").append(topic).append("/n");
-        topics.stream()
+
+        var topicObj = topics.stream()
                 .filter(lamb -> lamb.getName().equalsIgnoreCase(topic))
                 .findFirst()
-                .orElseThrow(NoSuchElementException::new)
-                .getVoteStream()
-                .forEach(lamb -> stringBuilder.append(lamb.getName()).append("/n"));
+                .orElseThrow(NoSuchElementException::new);
+        if (topicObj.getVoteStream().findAny().isEmpty())
+            return stringBuilder.append(String.format("There are no votes in the %s", topic)).toString();
+        else {
+            stringBuilder.append("List of votes in ").append(topic).append("/n");
+            topicObj.getVoteStream().forEach(lamb -> stringBuilder.append(lamb.getName()).append("/n"));
+        }
         return stringBuilder.toString();
     }
 
@@ -132,8 +136,9 @@ public class ServerState implements Serializable {
                 .filter(lamb -> lamb.getName().equalsIgnoreCase(topic))
                 .findFirst()
                 .orElseThrow(NoSuchElementException::new);
-        if (tmpTopic.getVoteStream().anyMatch(lamb -> !(lamb.getName().equalsIgnoreCase(vote)
-                        && lamb.getUsername().equalsIgnoreCase(activeUsers.get(id)))))
+        if (tmpTopic.getVoteStream()
+                .anyMatch(lamb -> lamb.getName().equalsIgnoreCase(vote)
+                        && lamb.getUsername().equalsIgnoreCase(activeUsers.get(id))))
             return tmpTopic.removeVote(vote);
         return false;
     }

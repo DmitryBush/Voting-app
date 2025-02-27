@@ -7,7 +7,9 @@ public class InputHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         super.channelRead(ctx, msg);
-        System.out.println(msg);
+        String message = (String) msg;
+
+        System.out.println(message.replaceAll("/n", "\n"));
     }
 
     @Override
