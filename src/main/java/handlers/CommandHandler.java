@@ -1,5 +1,7 @@
 package handlers;
 
+import handlers.exceptions.IncorrectCommand;
+
 import java.util.Objects;
 
 public abstract class CommandHandler implements handler{
@@ -23,7 +25,7 @@ public abstract class CommandHandler implements handler{
 
         if (Objects.nonNull(nextChain))
             return nextChain.handle(command, id);
-        return null;
+        throw new IncorrectCommand("Non-existent command entered");
     }
 
     protected abstract String process(String command, String id);
