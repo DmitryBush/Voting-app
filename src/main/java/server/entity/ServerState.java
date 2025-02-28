@@ -1,5 +1,6 @@
 package server.entity;
 
+import handlers.exceptions.IncorrectCommand;
 import server.entity.exceptions.NotLoggedIn;
 import server.entity.exceptions.NotUniqueName;
 
@@ -37,6 +38,8 @@ public class ServerState implements Serializable {
     }
 
     public boolean login(String username, String id) {
+        if (username == null)
+            throw new IncorrectCommand("Entered empty username");
         if (activeUsers.containsKey(id))
             return false;
         else if (!users.contains(username))
@@ -47,6 +50,8 @@ public class ServerState implements Serializable {
 
     public boolean createTopic(String nameTopic, String id) {
         isUserLoggedIn(id);
+        if (nameTopic == null)
+            throw new IncorrectCommand("Entered empty nameTopic");
         if (topics.stream().anyMatch(topic -> topic.getName().equalsIgnoreCase(nameTopic)))
             throw new NotUniqueName("You're entered not unique name for topic");
         return topics.add(new Topic(nameTopic, id));
@@ -54,6 +59,8 @@ public class ServerState implements Serializable {
 
     public String createVote(String nameTopic, String id, Vote vote) {
         isUserLoggedIn(id);
+        if (nameTopic == null)
+            throw new IncorrectCommand("Entered empty nameTopic");
         var topic = topics.stream()
                 .filter(lamb -> lamb.getName().equalsIgnoreCase(nameTopic))
                 .findFirst().orElseThrow(NoSuchElementException::new);
@@ -77,37 +84,42 @@ public class ServerState implements Serializable {
         return stringBuilder.toString();
     }
 
-    public String view(String id, String topic) {
+    public String view(String id, String nameTopic) {
         isUserLoggedIn(id);
         StringBuilder stringBuilder = new StringBuilder();
+        if (nameTopic == null)
+            throw new IncorrectCommand("Entered empty nameTopic");
 
-        var topicObj = topics.stream()
-                .filter(lamb -> lamb.getName().equalsIgnoreCase(topic))
+        var topic = topics.stream()
+                .filter(lamb -> lamb.getName().equalsIgnoreCase(nameTopic))
                 .findFirst()
                 .orElseThrow(NoSuchElementException::new);
-        if (topicObj.getVoteStream().findAny().isEmpty())
-            return stringBuilder.append(String.format("There are no votes in the %s", topic)).toString();
+        if (topic.getVoteStream().findAny().isEmpty())
+            return stringBuilder.append(String.format("There are no votes in the %s", nameTopic)).toString();
         else {
-            stringBuilder.append("List of votes in ").append(topic).append("/n");
-            topicObj.getVoteStream().forEach(lamb -> stringBuilder.append(lamb.getName()).append("/n"));
+            stringBuilder.append("List of votes in ").append(nameTopic).append("/n");
+            topic.getVoteStream().forEach(lamb -> stringBuilder.append(lamb.getName()).append("/n"));
         }
         return stringBuilder.toString();
     }
 
-    public String view(String id, String topic, String vote) {
+    public String view(String id, String nameTopic, String nameVote) {
         isUserLoggedIn(id);
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("Information about vote: ").append(vote).append("/n");
-        var currVote = topics.stream()
-                .filter(lamb -> lamb.getName().equalsIgnoreCase(topic))
+        if (nameTopic == null || nameVote == null)
+            throw new IncorrectCommand("Entered empty parameters");
+
+        stringBuilder.append("Information about vote: ").append(nameVote).append("/n");
+        var vote = topics.stream()
+                .filter(lamb -> lamb.getName().equalsIgnoreCase(nameTopic))
                 .findFirst()
                 .orElseThrow(NoSuchElementException::new)
                 .getVoteStream()
-                .filter(lamb -> lamb.getName().equalsIgnoreCase(vote))
+                .filter(lamb -> lamb.getName().equalsIgnoreCase(nameVote))
                 .findFirst()
                 .orElseThrow(NoSuchElementException::new);
-        stringBuilder.append(currVote.getDescription()).append("/n");
-        var answerOptions = currVote.getAnswerOptions();
+        stringBuilder.append(vote.getDescription()).append("/n");
+        var answerOptions = vote.getAnswerOptions();
         for (int i = 0; i < answerOptions.getOptions().size(); i++) {
             stringBuilder.append(String.format("%d. %s - %d", i + 1, answerOptions.getOptions().get(i),
                     answerOptions.getAnswers().get(i))).append("/n");
@@ -117,6 +129,8 @@ public class ServerState implements Serializable {
 
     public boolean vote(String id, String topic, String vote, String choice) {
         isUserLoggedIn(id);
+        if (topic == null || vote == null || choice == null)
+            throw new IncorrectCommand("Occurred error near parameter");
         var answerOptions = topics.stream()
                 .filter(lamb -> lamb.getName().equalsIgnoreCase(topic))
                 .findFirst()

@@ -57,8 +57,8 @@ public class CreateHandler extends CommandHandler {
                                         new AnswerOption(Arrays.stream(map.get("va").split("/n",
                                                 Integer.parseInt(map.get("vc")))).toList())));
             }
-            return "Occurred error";
-        } else
-            throw new RuntimeException();
+            throw new IncorrectCommand("Occurred error near parameter value");
+        }
+        throw new IncorrectCommand("Occurred error near parameter value");
     }
 }
