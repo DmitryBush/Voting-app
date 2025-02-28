@@ -12,7 +12,6 @@ import io.netty.handler.codec.string.StringEncoder;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import server.handlers.InputServerHandler;
-import server.handlers.LoginServerHandler;
 
 public class ServerApp {
     public static void main(String[] args) {
@@ -41,7 +40,7 @@ public class ServerApp {
 
             var future = bootstrap.bind(9090).sync();
 
-            ServerController.Execute(future);
+            new ServerController().Execute(future);
             future.channel().closeFuture().sync();
         } catch (InterruptedException e) {
             throw new RuntimeException(e);

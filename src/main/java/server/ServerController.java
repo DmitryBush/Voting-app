@@ -1,13 +1,16 @@
 package server;
 
 import io.netty.channel.ChannelFuture;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import server.entity.ServerState;
 
 import java.io.*;
 import java.util.Scanner;
 
 public class ServerController {
-    public static void Execute(ChannelFuture future) {
+    Logger logger = LoggerFactory.getLogger(ServerController.class);
+    public void Execute(ChannelFuture future) {
         var running = true;
         Scanner scanner = new Scanner(System.in);
 
@@ -17,9 +20,10 @@ public class ServerController {
         }
     }
 
-    private static boolean processString(String s, ChannelFuture future){
+    private boolean processString(String s, ChannelFuture future){
         if (s.equalsIgnoreCase("exit")) {
             future.channel().close();
+            logger.info("Exiting app. Do not turn off the device");
             return true;
         }
         else if (s.equalsIgnoreCase("save")) {
@@ -33,19 +37,21 @@ public class ServerController {
         return false;
     }
 
-    private static void save() {
+    private void save() {
         try(ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream("state.sav"))) {
             outputStream.writeObject(ServerState.getInstance());
+            logger.info("Server state saved");
         } catch (IOException e) {
-            System.out.println("Unable to save state");
+            logger.error("Unable to save state");
         }
     }
 
-    private static void load() {
+    private void load() {
         try(ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream("state.sav"))) {
             ServerState.getInstance().restoreState((ServerState) inputStream.readObject());
+            logger.info("Server state loaded");
         } catch (IOException | ClassNotFoundException e) {
-            System.out.println("Unable to load state");
+            logger.error("Unable to load state");
         }
     }
 }
