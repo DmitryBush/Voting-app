@@ -9,6 +9,7 @@ import server.entity.Vote;
 import server.handlers.InputServerHandler;
 
 import java.util.Arrays;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class VoteHandlerTest {
     @Test
@@ -18,7 +19,10 @@ public class VoteHandlerTest {
         server.login("username", "1");
         server.createTopic("topic1", "1");
         server.createVote("topic1", "1",
-                new Vote("task","username", "", new AnswerOption(Arrays.asList("sure", "nope"))));
+                new Vote("task",
+                        "username",
+                        "",
+                        new AnswerOption(new CopyOnWriteArrayList<>(Arrays.asList("sure", "nope")))));
 
         Assertions.assertEquals("You have successfully voted",
                 handler.handle("vote -t=topic -v=task -vc=0", "1"));
@@ -45,7 +49,10 @@ public class VoteHandlerTest {
         server.login("username", "1");
         server.createTopic("topic", "1");
         server.createVote("topic", "1",
-                new Vote("task","username", "", new AnswerOption(Arrays.asList("sure", "nope"))));
+                new Vote("task",
+                        "username",
+                        "",
+                        new AnswerOption(new CopyOnWriteArrayList<>(Arrays.asList("sure", "nope")))));
 
         Assertions.assertThrows(IncorrectCommand.class,
                 () -> handler.handle("vote -t=topic -v= -vc=0", "1"));
@@ -57,7 +64,10 @@ public class VoteHandlerTest {
         server.login("username", "1");
         server.createTopic("topic2", "1");
         server.createVote("topic2", "1",
-                new Vote("task","username", "", new AnswerOption(Arrays.asList("sure", "nope"))));
+                new Vote("task",
+                        "username",
+                        "",
+                        new AnswerOption(new CopyOnWriteArrayList<>(Arrays.asList("sure", "nope")))));
         server.vote("1", "topic2", "task", "0");
 
         Assertions.assertEquals("You're already voted",

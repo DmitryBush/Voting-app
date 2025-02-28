@@ -3,6 +3,7 @@ package server.handlers;
 import handlers.LoginHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import server.entity.exceptions.AccessDeniedException;
 import server.entity.exceptions.NotLoggedIn;
 import server.entity.exceptions.NotUniqueName;
 
@@ -18,7 +19,7 @@ public class InputServerHandler extends ChannelInboundHandlerAdapter {
         catch (NoSuchElementException e) {
             ctx.write("The specified topic or vote was not found");
         }
-        catch (NotLoggedIn | NotUniqueName e ) {
+        catch (NotLoggedIn | NotUniqueName | AccessDeniedException e ) {
             ctx.write(e.getMessage());
         }
     }

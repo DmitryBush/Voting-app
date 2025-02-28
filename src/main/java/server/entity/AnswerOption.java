@@ -3,21 +3,23 @@ package server.entity;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class AnswerOption implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    private List<String> options;
-    private Map<Integer, Integer> answers = new HashMap<>();
-    private Map<Integer, List<String>> votedUsers = new HashMap<>();
+    private CopyOnWriteArrayList<String> options;
+    private Map<Integer, Integer> answers = new ConcurrentHashMap<>();
+    private Map<Integer, List<String>> votedUsers = new ConcurrentHashMap<>();
 
-    public AnswerOption(List<String> options) {
+    public AnswerOption(CopyOnWriteArrayList<String> options) {
         this.options = options;
 
         for (int i = 0; i < options.size(); i++) {
-            answers.put(i, 0);
-            votedUsers.put(i, new ArrayList<>());
+            answers.putIfAbsent(i, 0);
+            votedUsers.putIfAbsent(i, Collections.synchronizedList(new ArrayList<>()));
         }
     }
 
@@ -31,16 +33,13 @@ public class AnswerOption implements Serializable {
     public boolean vote(String username, int choice) {
         if (choice >= options.size())
             return false;
-        answers.put(choice, answers.get(choice) + 1);
+
+        answers.compute(choice, (k, v) -> (v == null) ? 1 : v + 1);
         return votedUsers.get(choice).add(username);
     }
 
     public List<String> getOptions() {
         return options;
-    }
-
-    public void setOptions(List<String> options) {
-        this.options = options;
     }
 
     public Map<Integer, Integer> getAnswers() {
