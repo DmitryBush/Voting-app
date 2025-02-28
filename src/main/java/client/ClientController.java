@@ -3,12 +3,15 @@ package client;
 import handlers.LoginHandler;
 import handlers.exceptions.IncorrectCommand;
 import io.netty.channel.ChannelFuture;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import parser.StringParser;
 
 import java.util.Scanner;
 
 public class ClientController {
     Scanner scanner = new Scanner(System.in);
+    private Logger logger = LoggerFactory.getLogger(ClientController.class);
 
     public void Execute(ChannelFuture future) {
         var running = true;
@@ -36,6 +39,7 @@ public class ClientController {
             }
             if (s.split(" ")[0].equalsIgnoreCase("vote"))
                 s = addVoteInfo(s, future);
+            logger.debug("Result string: {}", s);
 
             new LoginHandler(this).handle(s, null);
             future.channel().writeAndFlush(s);

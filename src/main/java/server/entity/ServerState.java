@@ -1,6 +1,8 @@
 package server.entity;
 
 import handlers.exceptions.IncorrectCommand;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import server.entity.exceptions.AccessDeniedException;
 import server.entity.exceptions.NotLoggedIn;
 import server.entity.exceptions.NotUniqueName;
@@ -20,6 +22,8 @@ public class ServerState implements Serializable {
     private final Map<String, String> activeUsers = new ConcurrentHashMap<>();
     private final List<String> users = new CopyOnWriteArrayList<>();
 
+    Logger logger = LoggerFactory.getLogger(ServerState.class);
+
     public static ServerState getInstance() {
         if (instance == null) {
             synchronized (ServerState.class) {
@@ -31,19 +35,22 @@ public class ServerState implements Serializable {
     }
 
     private void isUserLoggedIn(String id) {
-        if (!activeUsers.containsKey(id))
+        if (!activeUsers.containsKey(id)) {
+            logger.info("{} tried to perform action without log in", id);
             throw new NotLoggedIn("You're not logged in");
+        }
     }
 
     public boolean login(String username, String id) {
         if (username == null)
             throw new IncorrectCommand("Entered empty username");
 
-        if (activeUsers.containsKey(id))
+        if (activeUsers.containsKey(id)) {
             return false;
-        else if (!users.contains(username))
+        } else if (!users.contains(username))
             users.add(username);
         activeUsers.putIfAbsent(id, username);
+        logger.info("{} logged in with a username {}", id, username);
         return true;
     }
 
@@ -55,6 +62,7 @@ public class ServerState implements Serializable {
         synchronized (topics) {
             if (topics.stream().anyMatch(topic -> topic.getName().equalsIgnoreCase(nameTopic)))
                 throw new NotUniqueName("You're entered not unique name for topic");
+            logger.info("{}({}) created topic with name {}", id, activeUsers.get(id), nameTopic);
             return topics.add(new Topic(nameTopic, id));
         }
     }
@@ -72,6 +80,7 @@ public class ServerState implements Serializable {
             if (topic.getVoteStream()
                     .anyMatch(vote1 -> vote1.getName().equalsIgnoreCase(vote.getName())))
                 throw new NotUniqueName("You're entered not unique name for vote");
+            logger.info("{}({}) created vote with name {} in {}", id, activeUsers.get(id), vote.getName(), nameTopic);
             topic.addVote(vote);
             return "Vote created";
         }
@@ -155,6 +164,7 @@ public class ServerState implements Serializable {
                     .orElseThrow(NoSuchElementException::new).getAnswerOptions();
             if (answerOptions.isUserVote(activeUsers.get(id)))
                 return false;
+            logger.info("{}({}) choose {} in {}({})", id, activeUsers.get(id), choice, vote, topic);
             return answerOptions.vote(activeUsers.get(id), Integer.parseInt(choice));
         }
     }
@@ -170,9 +180,10 @@ public class ServerState implements Serializable {
                     .findFirst()
                     .orElseThrow(NoSuchElementException::new);
             if (tmpTopic.getVoteStream().anyMatch(lamb -> lamb.getName().equalsIgnoreCase(vote))) {
-                if (tmpTopic.getVoteStream().anyMatch(lamb -> lamb.getUsername().equalsIgnoreCase(activeUsers.get(id))))
+                if (tmpTopic.getVoteStream().anyMatch(lamb -> lamb.getUsername().equalsIgnoreCase(activeUsers.get(id)))) {
+                    logger.info("{}({}) deleted by {}({})", vote, topic, activeUsers.get("id"), id);
                     return tmpTopic.removeVote(vote);
-                else
+                } else
                     throw new AccessDeniedException("You do not have the right to delete this vote");
             } else
                 throw new NoSuchElementException();
@@ -184,9 +195,7 @@ public class ServerState implements Serializable {
             this.topics.clear();
             this.topics.addAll(loadedState.topics);
         }
-        synchronized (users) {
-            this.users.clear();
-            this.users.addAll(loadedState.users);
-        }
+        this.users.clear();
+        this.users.addAll(loadedState.users);
     }
 }

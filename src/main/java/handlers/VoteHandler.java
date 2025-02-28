@@ -2,12 +2,15 @@ package handlers;
 
 import client.ClientController;
 import handlers.exceptions.IncorrectCommand;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import parser.StringParser;
 import server.entity.ServerState;
 import server.handlers.InputServerHandler;
 
 public class VoteHandler extends CommandHandler {
     private final Object object;
+    private final Logger logger = LoggerFactory.getLogger(VoteHandler.class);
 
     public VoteHandler(Object o) {
         super("vote", new DeleteHandler(o));
@@ -29,6 +32,7 @@ public class VoteHandler extends CommandHandler {
             });
             return "";
         } else if (object.getClass() == InputServerHandler.class) {
+            logger.debug("Command: {}\nMap: {}", command, map);
             if (ServerState.getInstance().vote(id, map.get("t"), map.get("v"), map.get("vc")))
                 return "You have successfully voted";
             else {

@@ -2,6 +2,8 @@ package handlers;
 
 import client.ClientController;
 import handlers.exceptions.IncorrectCommand;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import parser.StringParser;
 import server.entity.AnswerOption;
 import server.entity.ServerState;
@@ -9,15 +11,14 @@ import server.entity.Vote;
 import server.handlers.InputServerHandler;
 
 import java.util.Arrays;
-import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class CreateHandler extends CommandHandler {
     private final Object object;
+    private final Logger logger = LoggerFactory.getLogger(CreateHandler.class);
 
     public CreateHandler(Object o) {
         super("create", new VoteHandler(o));
-
         object = o;
     }
     @Override
@@ -41,6 +42,7 @@ public class CreateHandler extends CommandHandler {
             }
             return "";
         } else if (object.getClass() == InputServerHandler.class) {
+            logger.debug("Command: {}\nMap: {}", command, map);
             if (map.containsKey("n") && map.containsKey("t")) {
                 ServerState.getInstance().createTopic(map.get("n"), id);
                 return ServerState.getInstance()

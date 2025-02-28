@@ -2,12 +2,15 @@ package handlers;
 
 import client.ClientController;
 import handlers.exceptions.IncorrectCommand;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import parser.StringParser;
 import server.entity.ServerState;
 import server.handlers.InputServerHandler;
 
 public class DeleteHandler extends CommandHandler{
     private final Object object;
+    private final Logger logger = LoggerFactory.getLogger(DeleteHandler.class);
 
     public DeleteHandler(Object o) {
         super("delete", null);
@@ -28,6 +31,7 @@ public class DeleteHandler extends CommandHandler{
             });
             return "";
         } else if (object.getClass() == InputServerHandler.class) {
+            logger.debug("Command: {}\nMap: {}", command, map);
             if (ServerState.getInstance().delete(id, map.get("t"), map.get("v")))
                 return "Vote deleted";
             else {
