@@ -31,7 +31,7 @@ public class DeleteHandler extends CommandHandler{
             if (ServerState.getInstance().delete(id, map.get("t"), map.get("v")))
                 return "Vote deleted";
             else {
-                return "Something wrong";
+                return "Something went wrong";
             }
         } else
             throw new RuntimeException();

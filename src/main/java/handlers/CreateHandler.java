@@ -10,6 +10,7 @@ import server.handlers.InputServerHandler;
 
 import java.util.Arrays;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class CreateHandler extends CommandHandler {
     private final Object object;
@@ -44,21 +45,25 @@ public class CreateHandler extends CommandHandler {
                 ServerState.getInstance().createTopic(map.get("n"), id);
                 return ServerState.getInstance()
                         .createVote(map.get("t"), id,
-                                new Vote(map.get("vn"), null, map.get("vd"),
-                                        new AnswerOption(Arrays.stream(map.get("va").split("/n",
-                                                Integer.parseInt(map.get("vc")))).toList())));
+                                new Vote(map.get("vn"),
+                                        null,
+                                        map.get("vd"),
+                                        new AnswerOption(new CopyOnWriteArrayList<>(Arrays.asList(map.get("va")
+                                                        .split("/n", Integer.parseInt(map.get("vc"))))))));
             } else if (map.containsKey("n")) {
                 if (ServerState.getInstance().createTopic(map.get("n"), id))
                     return "Topic created";
             } else if (map.containsKey("t")) {
                 return ServerState.getInstance()
                         .createVote(map.get("t"), id,
-                                new Vote(map.get("vn"), null, map.get("vd"),
-                                        new AnswerOption(Arrays.stream(map.get("va").split("/n",
-                                                Integer.parseInt(map.get("vc")))).toList())));
+                                new Vote(map.get("vn"),
+                                        null,
+                                        map.get("vd"),
+                                        new AnswerOption(new CopyOnWriteArrayList<>(Arrays.asList(map.get("va")
+                                                .split("/n", Integer.parseInt(map.get("vc"))))))));
             }
-            return "Occurred error";
-        } else
-            throw new RuntimeException();
+            throw new IncorrectCommand("Occurred error near parameter value");
+        }
+        throw new IncorrectCommand("Occurred error near parameter value");
     }
 }

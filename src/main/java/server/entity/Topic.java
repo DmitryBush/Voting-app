@@ -3,6 +3,7 @@ package server.entity;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
@@ -13,7 +14,7 @@ public class Topic implements Serializable {
 
     private String name;
     private String username;
-    private List<Vote> votes = new ArrayList<>();
+    private List<Vote> votes = Collections.synchronizedList(new ArrayList<>());
 
     public Topic(String name, String username) {
         this.name = name;
@@ -25,10 +26,7 @@ public class Topic implements Serializable {
     }
 
     public boolean removeVote(String vote) {
-        votes = votes.stream()
-                .filter(lamb -> !lamb.getName().equalsIgnoreCase(vote))
-                .toList();
-        return true;
+        return votes.removeIf(lamb -> lamb.getName().equalsIgnoreCase(vote));
     }
 
     public boolean addVote(Vote vote) {
