@@ -1,4 +1,4 @@
-package server.handlers;
+package server.handlers.request;
 
 import handlers.exceptions.IncorrectCommand;
 import org.slf4j.Logger;
@@ -11,11 +11,11 @@ import server.entity.Vote;
 import java.util.Arrays;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public class CreateHandler extends ServerAbstractHandler {
-    private final Logger logger = LoggerFactory.getLogger(CreateHandler.class);
+public class CreateRequestHandler extends RequestServerAbstractHandler {
+    private final Logger logger = LoggerFactory.getLogger(CreateRequestHandler.class);
 
-    public CreateHandler() {
-        super("create", new VoteHandler());
+    public CreateRequestHandler() {
+        super("create", new VoteRequestHandler());
     }
     @Override
     protected String process(String command, String id) {

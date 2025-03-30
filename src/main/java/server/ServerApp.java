@@ -11,7 +11,7 @@ import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.codec.string.StringEncoder;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
-import server.handlers.InputServerHandler;
+import server.handlers.request.RequestProcessingHandler;
 
 public class ServerApp {
     public static void main(String[] args) {
@@ -32,7 +32,7 @@ public class ServerApp {
                             socketChannel.pipeline()
                                     .addLast(new StringEncoder())
                                     .addLast(new StringDecoder())
-                                    .addLast(new InputServerHandler());
+                                    .addLast(new RequestProcessingHandler());
                         }
                     })
                     .option(ChannelOption.SO_BACKLOG, 128)

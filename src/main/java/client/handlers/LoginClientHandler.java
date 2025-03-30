@@ -1,18 +1,21 @@
 package client.handlers;
 
 import handlers.exceptions.IncorrectCommand;
+import io.netty.channel.ChannelFuture;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import parser.StringParser;
 
 public class LoginClientHandler extends CommandAbstractHandler {
     private final Logger logger = LoggerFactory.getLogger(LoginClientHandler.class);
-    public LoginClientHandler() {
-        super("login", new ViewClientHandler());
+    private final ChannelFuture future;
+    public LoginClientHandler(ChannelFuture future) {
+        super("login", new ViewClientHandler(future));
+        this.future = future;
     }
 
     @Override
-    protected String process(String command) {
+    protected boolean process(String command) {
         var map = StringParser.parseCommand(command);
         if (map.isEmpty())
             throw new IncorrectCommand("Entered command with empty parameters");
@@ -20,6 +23,7 @@ public class LoginClientHandler extends CommandAbstractHandler {
             if (value == null)
                 throw new IncorrectCommand("Occurred error near parameter value");
         });
-        return "";
+        future.channel().writeAndFlush(command);
+        return false;
     }
 }

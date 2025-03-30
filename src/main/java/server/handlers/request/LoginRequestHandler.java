@@ -1,15 +1,15 @@
-package server.handlers;
+package server.handlers.request;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import parser.StringParser;
 import server.entity.ServerState;
 
-public class LoginHandler extends ServerAbstractHandler {
-    private final Logger logger = LoggerFactory.getLogger(LoginHandler.class);
+public class LoginRequestHandler extends RequestServerAbstractHandler {
+    private final Logger logger = LoggerFactory.getLogger(LoginRequestHandler.class);
 
-    public LoginHandler() {
-        super("login", new ViewHandler());
+    public LoginRequestHandler() {
+        super("login", new ViewRequestHandler());
     }
 
     @Override

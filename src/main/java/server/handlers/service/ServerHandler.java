@@ -1,6 +1,6 @@
-package server.handlers;
+package server.handlers.service;
 
 public interface ServerHandler {
     void setNext(ServerHandler handler);
-    String handle(String command, String id);
+    boolean handle(String command);
 }

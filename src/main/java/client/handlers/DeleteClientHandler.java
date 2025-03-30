@@ -1,19 +1,22 @@
 package client.handlers;
 
 import handlers.exceptions.IncorrectCommand;
+import io.netty.channel.ChannelFuture;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import parser.StringParser;
 
 public class DeleteClientHandler extends CommandAbstractHandler {
     private final Logger logger = LoggerFactory.getLogger(DeleteClientHandler.class);
+    private final ChannelFuture future;
 
-    public DeleteClientHandler() {
-        super("delete", null);
+    public DeleteClientHandler(ChannelFuture future) {
+        super("delete", new ExitClientHandler(future));
+        this.future = future;
     }
 
     @Override
-    protected String process(String command) {
+    protected boolean process(String command) {
         var map = StringParser.parseCommand(command);
         if (map.isEmpty())
             throw new IncorrectCommand("Entered empty command");
@@ -24,6 +27,7 @@ public class DeleteClientHandler extends CommandAbstractHandler {
             if (value == null)
                 throw new IncorrectCommand("Occurred error near parameter value");
         });
-        return "";
+        future.channel().writeAndFlush(command);
+        return false;
     }
 }

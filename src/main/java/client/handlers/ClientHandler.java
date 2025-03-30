@@ -2,5 +2,5 @@ package client.handlers;
 
 public interface ClientHandler {
     void setNext(ClientHandler clientHandler);
-    String handle(String command);
+    boolean handle(String command);
 }
