@@ -1,14 +1,14 @@
-package server.handlers;
+package server.handlers.request;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import parser.StringParser;
 import server.entity.ServerState;
 
-public class DeleteHandler extends ServerAbstractHandler {
-    private final Logger logger = LoggerFactory.getLogger(DeleteHandler.class);
+public class DeleteRequestHandler extends RequestServerAbstractHandler {
+    private final Logger logger = LoggerFactory.getLogger(DeleteRequestHandler.class);
 
-    public DeleteHandler() {
+    public DeleteRequestHandler() {
         super("delete", null);
     }
     @Override

@@ -1,4 +1,4 @@
-import server.handlers.DeleteHandler;
+import server.handlers.request.DeleteRequestHandler;
 import handlers.exceptions.IncorrectCommand;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -14,27 +14,27 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class DeleteHandlerTest {
     @Test
     void testDeleteEmpty() {
-        var handler = new DeleteHandler();
+        var handler = new DeleteRequestHandler();
         Assertions.assertThrows(IncorrectCommand.class,
                 () -> handler.handle("delete", "123"));
     }
 
     @Test
     void testDeleteIncomplete() {
-        var handler = new DeleteHandler();
+        var handler = new DeleteRequestHandler();
         Assertions.assertThrows(IncorrectCommand.class,
                 () -> handler.handle("delete -t= -v=task", "123"));
     }
 
     @Test
     void testDelete() {
-        var handler = new DeleteHandler();
+        var handler = new DeleteRequestHandler();
         Assertions.assertEquals("", handler.handle("delete -t=topic -v=task", "123"));
     }
 
     @Test
     void testServerDelete() {
-        var handler = new DeleteHandler();
+        var handler = new DeleteRequestHandler();
         var serverState = ServerState.getInstance();
         serverState.login("username", "123");
         serverState.createTopic("topic", "123");
@@ -49,7 +49,7 @@ public class DeleteHandlerTest {
 
     @Test
     void testServerDeleteNonExist() {
-        var handler = new DeleteHandler();
+        var handler = new DeleteRequestHandler();
         var serverState = ServerState.getInstance();
         serverState.login("username", "123");
 
@@ -59,7 +59,7 @@ public class DeleteHandlerTest {
 
     @Test
     void testServerDeleteEmpty() {
-        var handler = new DeleteHandler();
+        var handler = new DeleteRequestHandler();
         var serverState = ServerState.getInstance();
         serverState.login("username", "123");
 
@@ -69,7 +69,7 @@ public class DeleteHandlerTest {
 
     @Test
     void testServerDeleteIncomplete() {
-        var handler = new DeleteHandler();
+        var handler = new DeleteRequestHandler();
         var serverState = ServerState.getInstance();
         serverState.login("username", "123");
 
@@ -79,7 +79,7 @@ public class DeleteHandlerTest {
 
     @Test
     void testServerDeleteNotLoggedIn() {
-        var handler = new DeleteHandler();
+        var handler = new DeleteRequestHandler();
         var serverState = ServerState.getInstance();
 
         serverState.login("username", "123");

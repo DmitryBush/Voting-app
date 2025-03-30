@@ -1,12 +1,12 @@
 package client.handlers;
 
+import io.netty.channel.ChannelFuture;
+
 public class CommandClientHandler extends CommandAbstractHandler{
-    public CommandClientHandler() {
-        super("", new LoginClientHandler());
+    public CommandClientHandler(ChannelFuture future) {
+        super("", new LoginClientHandler(future));
     }
 
     @Override
-    protected String process(String command) {
-        return "";
-    }
+    protected boolean process(String command) {return true;}
 }

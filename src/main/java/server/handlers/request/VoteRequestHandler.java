@@ -1,15 +1,15 @@
-package server.handlers;
+package server.handlers.request;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import parser.StringParser;
 import server.entity.ServerState;
 
-public class VoteHandler extends ServerAbstractHandler {
-    private final Logger logger = LoggerFactory.getLogger(VoteHandler.class);
+public class VoteRequestHandler extends RequestServerAbstractHandler {
+    private final Logger logger = LoggerFactory.getLogger(VoteRequestHandler.class);
 
-    public VoteHandler() {
-        super("vote", new DeleteHandler());
+    public VoteRequestHandler() {
+        super("vote", new DeleteRequestHandler());
     }
     @Override
     protected String process(String command, String id) {
