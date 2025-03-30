@@ -26,7 +26,7 @@ public class ClientController {
     private boolean processString(String s, ChannelFuture future) {
         try {
             return new CommandClientHandler(future).handle(s);
-        } catch (IncorrectCommand e) {
+        } catch (RuntimeException e) {
             System.out.println(e.getMessage());
         }
         return false;
