@@ -1,20 +1,20 @@
-package handlers;
+package server.handlers.request;
 
 import handlers.exceptions.IncorrectCommand;
 
 import java.util.Objects;
 
-public abstract class CommandHandler implements handler{
+public abstract class RequestServerAbstractHandler implements RequestServerHandler {
     private final String baseCommand;
-    private handler nextChain;
+    private RequestServerHandler nextChain;
 
-    public CommandHandler(String baseCommand, handler nextChain) {
+    public RequestServerAbstractHandler(String baseCommand, RequestServerHandler nextChain) {
         this.baseCommand = baseCommand;
         this.nextChain = nextChain;
     }
 
     @Override
-    public void setNext(handler handler) {
+    public void setNext(RequestServerHandler handler) {
         this.nextChain = handler;
     }
 

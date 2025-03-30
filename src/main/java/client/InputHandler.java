@@ -6,7 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class InputHandler extends ChannelInboundHandlerAdapter {
-    private Logger logger = LoggerFactory.getLogger(InputHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(InputHandler.class);
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         super.channelRead(ctx, msg);

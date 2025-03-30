@@ -1,31 +1,29 @@
-import client.ClientController;
-import handlers.ViewHandler;
+import server.handlers.request.ViewRequestHandler;
 import handlers.exceptions.IncorrectCommand;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import server.entity.ServerState;
-import server.handlers.InputServerHandler;
 
 import java.util.NoSuchElementException;
 
 public class ViewHandlerTest {
     @Test
     public void testView() {
-        var handler = new ViewHandler(new ClientController());
+        var handler = new ViewRequestHandler();
 
         Assertions.assertEquals("", handler.handle("view", ""));
     }
 
     @Test
     public void testIncompleteCommand() {
-        var handler = new ViewHandler(new ClientController());
+        var handler = new ViewRequestHandler();
 
         Assertions.assertThrows(IncorrectCommand.class, () -> handler.handle("view -t=", ""));
     }
 
     @Test
     public void testIncompleteServerCommand() {
-        var handler = new ViewHandler(new InputServerHandler());
+        var handler = new ViewRequestHandler();
         var serverState = ServerState.getInstance();
         serverState.login("username", "1");
 
@@ -33,7 +31,7 @@ public class ViewHandlerTest {
     }
     @Test
     public void testAbsentTopic() {
-        var handler = new ViewHandler(new InputServerHandler());
+        var handler = new ViewRequestHandler();
         var serverState = ServerState.getInstance();
         serverState.login("username", "1");
 
@@ -41,7 +39,7 @@ public class ViewHandlerTest {
     }
     @Test
     public void testAbsentVote() {
-        var handler = new ViewHandler(new InputServerHandler());
+        var handler = new ViewRequestHandler();
         ServerState.getInstance().login("username", "1");
         ServerState.getInstance().createTopic("qwerty", "1");
 
@@ -50,7 +48,7 @@ public class ViewHandlerTest {
     }
     @Test
     public void testServerView() {
-        var handler = new ViewHandler(new InputServerHandler());
+        var handler = new ViewRequestHandler();
         var serverState = ServerState.getInstance();
         serverState.login("username", "1");
         serverState.createTopic("topic", "1");
@@ -60,7 +58,7 @@ public class ViewHandlerTest {
     }
     @Test
     public void testEmptyServerCommand() {
-        var handler = new ViewHandler(new InputServerHandler());
+        var handler = new ViewRequestHandler();
         var serverState = ServerState.getInstance();
         serverState.login("username", "1");
 
@@ -68,7 +66,7 @@ public class ViewHandlerTest {
     }
     @Test
     public void testEmptyCommand() {
-        var handler = new ViewHandler(new ClientController());
+        var handler = new ViewRequestHandler();
         var serverState = ServerState.getInstance();
         serverState.login("username", "1");
 
