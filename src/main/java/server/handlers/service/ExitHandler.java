@@ -15,8 +15,12 @@ public class ExitHandler extends ServerServiceAbstractHandler {
 
     @Override
     protected boolean process(String command) {
-        future.channel().close();
-        logger.info("Exiting app. Do not turn off the device");
-        return true;
+        try {
+            future.channel().close().sync();
+            logger.info("Exiting app. Do not turn off the device");
+            return true;
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

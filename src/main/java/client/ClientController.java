@@ -10,7 +10,7 @@ import parser.StringParser;
 import java.util.Scanner;
 
 public class ClientController {
-    private Logger logger = LoggerFactory.getLogger(ClientController.class);
+    private final Logger logger = LoggerFactory.getLogger(ClientController.class);
 
     public void Execute(ChannelFuture future) {
         var running = true;
@@ -27,8 +27,8 @@ public class ClientController {
         try {
             return new CommandClientHandler(future).handle(s);
         } catch (RuntimeException e) {
-            System.out.println(e.getMessage());
+            logger.error(e.getMessage());
+            return false;
         }
-        return false;
     }
 }

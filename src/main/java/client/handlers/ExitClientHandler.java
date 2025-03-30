@@ -11,7 +11,11 @@ public class ExitClientHandler extends CommandAbstractHandler{
 
     @Override
     protected boolean process(String command) {
-        future.channel().close();
-        return true;
+        try {
+            future.channel().close().sync();
+            return true;
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
