@@ -9,7 +9,7 @@ import java.io.*;
 import java.util.Scanner;
 
 public class ServerController {
-    Logger logger = LoggerFactory.getLogger(ServerController.class);
+    private final Logger logger = LoggerFactory.getLogger(ServerController.class);
     public void Execute(ChannelFuture future) {
         var running = true;
         Scanner scanner = new Scanner(System.in);
