@@ -1,6 +1,5 @@
 package server.handlers;
 
-import handlers.LoginHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import server.entity.exceptions.AccessDeniedException;
@@ -14,7 +13,7 @@ public class InputServerHandler extends ChannelInboundHandlerAdapter {
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         super.channelRead(ctx, msg);
         try {
-            ctx.write(new LoginHandler(this).handle((String) msg, ctx.channel().id().toString()));
+            ctx.write(new ServerCommandHandler().handle((String) msg, ctx.channel().id().toString()));
         }
         catch (NoSuchElementException e) {
             ctx.write("The specified topic or vote was not found");

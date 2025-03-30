@@ -1,6 +1,6 @@
 package client;
 
-import handlers.LoginHandler;
+import client.handlers.CommandClientHandler;
 import handlers.exceptions.IncorrectCommand;
 import io.netty.channel.ChannelFuture;
 import org.slf4j.Logger;
@@ -16,9 +16,11 @@ public class ClientController {
     public void Execute(ChannelFuture future) {
         var running = true;
 
-        while (running) {
-            if (processString(scanner.nextLine(), future))
-                running = false;
+        try (var scanner = new Scanner(System.in)) {
+            while (running) {
+                if (processString(scanner.nextLine(), future))
+                    running = false;
+            }
         }
     }
 
@@ -41,7 +43,7 @@ public class ClientController {
                 s = addVoteInfo(s, future);
             logger.debug("Result string: {}", s);
 
-            new LoginHandler(this).handle(s, null);
+            new CommandClientHandler().handle(s);
             future.channel().writeAndFlush(s);
         } catch (IncorrectCommand e) {
             System.out.println(e.getMessage());
